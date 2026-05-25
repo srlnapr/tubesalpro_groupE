@@ -51,8 +51,7 @@ var nUser, nPasien, nLayanan, nTransaksi, nKunjungan int
 func banner() {
 	fmt.Println("*****************************************************")
 	fmt.Println("***      Aplikasi Manajemen Klinik (SIM-KLIK)      ***")
-	fmt.Println("***         Created by Nama Lu                     ***")
-	fmt.Println("***         Algoritma Pemrograman 2025             ***")
+	fmt.Println("***          Algoritma Pemrograman  2025           ***")
 	fmt.Println("*****************************************************")
 }
 

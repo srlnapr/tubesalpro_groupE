@@ -202,7 +202,10 @@ func binarySearchPasienByID(data [MAX]Pasien, n int, keyword string) int {
 func catatKunjungan(data *[MAX]Kunjungan, n *int, daftarPasien [MAX]Pasien, jumlahPasien int) {
 	var k Kunjungan
 	var idx int
+<<<<<<< HEAD
 	var pilih int
+=======
+>>>>>>> 56458cb79cb25dc3be531b54291e7cc59fde511d
 
 	fmt.Println("\n=== Catat Kunjungan Pasien ===")
 
@@ -228,6 +231,7 @@ func catatKunjungan(data *[MAX]Kunjungan, n *int, daftarPasien [MAX]Pasien, juml
 	fmt.Print("Catatan Perawatan: ")
 	fmt.Scan(&k.Catatan)
 
+<<<<<<< HEAD
 	fmt.Println("\n1. Simpan")
 	fmt.Println("2. Batal")
 	fmt.Print("Pilih: ")
@@ -242,6 +246,12 @@ func catatKunjungan(data *[MAX]Kunjungan, n *int, daftarPasien [MAX]Pasien, juml
 	} else {
 		fmt.Println("Pilihan tidak valid, input dibatalkan.")
 	}
+=======
+	data[*n] = k
+	*n++
+
+	fmt.Println("Kunjungan berhasil dicatat.")
+>>>>>>> 56458cb79cb25dc3be531b54291e7cc59fde511d
 }
 
 func lihatKunjungan(data [MAX]Kunjungan, n int) {
@@ -322,8 +332,11 @@ func tambahTransaksi() {
 	}
 
 	var t Transaksi
+<<<<<<< HEAD
 	var pilih int
 
+=======
+>>>>>>> 56458cb79cb25dc3be531b54291e7cc59fde511d
 	fmt.Println("\n--- Tambah Transaksi Pembayaran ---")
 
 	fmt.Print("ID Transaksi: ")
@@ -351,6 +364,7 @@ func tambahTransaksi() {
 	scanner.Scan()
 	t.TanggalVisit = strings.TrimSpace(scanner.Text())
 
+<<<<<<< HEAD
 	fmt.Println("\n1. Simpan")
 	fmt.Println("2. Batal")
 	fmt.Print("Pilih: ")
@@ -365,6 +379,12 @@ func tambahTransaksi() {
 	} else {
 		fmt.Println("Pilihan tidak valid, input dibatalkan.")
 	}
+=======
+	dataTransaksi[jumlahTransaksi] = t
+	jumlahTransaksi++
+	fmt.Println("Transaksi berhasil ditambahkan.")
+
+>>>>>>> 56458cb79cb25dc3be531b54291e7cc59fde511d
 }
 
 func tampilkanSemuaTransaksi(data [MAX]Transaksi, n int) {
@@ -545,6 +565,7 @@ func main() {
 	var sisaEnter string
 
 	for {
+<<<<<<< HEAD
 		fmt.Print("\n***  ========================  ***")
 		fmt.Print("\n***  ======= SIM-KLIK =======  ***")
 		fmt.Println("\n***  ========================  ***")
@@ -558,6 +579,18 @@ func main() {
 		fmt.Println("7.  Cari Pasien")
 		fmt.Println("8.  Kelola Transaksi Pembayaran")
 		fmt.Println("9.  Urutkan Data Transaksi")
+=======
+		fmt.Println("\n======= SIM-KLIK =======")
+		fmt.Println("1. Tambah Pasien")
+		fmt.Println("2. Lihat Pasien")
+		fmt.Println("3. Tambah Layanan")
+		fmt.Println("4. Lihat Layanan")
+		fmt.Println("5. Catat Kunjungan")
+		fmt.Println("6. Lihat Kunjungan")
+		fmt.Println("7. Cari Pasien")
+		fmt.Println("8. Kelola Transaksi Pembayaran")
+		fmt.Println("9. Urutkan Data Transaksi")
+>>>>>>> 56458cb79cb25dc3be531b54291e7cc59fde511d
 		fmt.Println("10. Tampilkan Statistik")
 		fmt.Println("11. Keluar")
 		fmt.Print("Pilih menu: ")
