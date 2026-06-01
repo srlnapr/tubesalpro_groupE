@@ -85,11 +85,12 @@ func registrasi(nUser *int) {
 	fmt.Print("Pilih role [1-2] : ")
 	fmt.Scan(&pilih)
 
-	if pilih == 1 {
+	switch pilih {
+	case 1:
 		dataUser[*nUser].Role = "admin"
-	} else if pilih == 2 {
+	case 2:
 		dataUser[*nUser].Role = "kasir"
-	} else {
+	default:
 		fmt.Println("Role tidak valid")
 		return
 	}
@@ -186,7 +187,6 @@ func sequentialSearchIndexLayanan(id int, nLayanan int) int {
 	}
 	return -1
 }
-
 
 // ubahPasien mengubah data pasien berdasarkan ID menggunakan sequential search
 // Parameter: nPasien int - jumlah pasien saat ini
@@ -420,7 +420,10 @@ func binarySearchID(id int, nPasien int) {
 
 // tambahTransaksi menambahkan transaksi baru dan otomatis mencatat kunjungan
 // Parameter: nTransaksi *int, nKunjungan *int - pointer ke counter masing-masing
-func tambahTransaksi(nTransaksi *int, nKunjungan *int) {
+func tambahTransaksi(nTransaksi *int, nKunjungan *int, nPasien int, nLayanan int) {
+	var idPasien, idLayanan int
+	var idxPasien, idxLayanan int
+
 	if *nTransaksi >= NMAX {
 		fmt.Println("Data penuh")
 		return
@@ -428,15 +431,33 @@ func tambahTransaksi(nTransaksi *int, nKunjungan *int) {
 
 	fmt.Println("\n*** TAMBAH TRANSAKSI ***")
 	fmt.Print("ID Pasien : ")
-	fmt.Scan(&dataTransaksi[*nTransaksi].IDPasien)
-	fmt.Print("Nama Pasien : ")
-	fmt.Scan(&dataTransaksi[*nTransaksi].NamaPasien)
-	fmt.Print("Layanan : ")
-	fmt.Scan(&dataTransaksi[*nTransaksi].Layanan)
+	fmt.Scan(&idPasien)
+
+	idxPasien = sequentialSearchIndexPasien(idPasien, nPasien)
+
+	if idxPasien == -1 {
+		fmt.Println("Pasien tidak ditemukan")
+		return
+	}
+
+	fmt.Print("ID Layanan : ")
+	fmt.Scan(&idLayanan)
+
+	idxLayanan = sequentialSearchIndexLayanan(idLayanan, nLayanan)
+
+	if idxLayanan == -1 {
+		fmt.Println("Layanan tidak ditemukan")
+		return
+	}
+
+	dataTransaksi[*nTransaksi].IDPasien = dataPasien[idxPasien].ID
+	dataTransaksi[*nTransaksi].NamaPasien = dataPasien[idxPasien].Nama
+	dataTransaksi[*nTransaksi].Layanan = dataLayanan[idxLayanan].Nama
+
 	fmt.Print("Tanggal (angka) : ")
 	fmt.Scan(&dataTransaksi[*nTransaksi].Tanggal)
-	fmt.Print("Total Biaya : ")
-	fmt.Scan(&dataTransaksi[*nTransaksi].TotalBiaya)
+
+	dataTransaksi[*nTransaksi].TotalBiaya = dataLayanan[idxLayanan].Harga
 
 	dataKunjungan[*nKunjungan].IDPasien = dataTransaksi[*nTransaksi].IDPasien
 	dataKunjungan[*nKunjungan].NamaPasien = dataTransaksi[*nTransaksi].NamaPasien
@@ -447,6 +468,9 @@ func tambahTransaksi(nTransaksi *int, nKunjungan *int) {
 	(*nKunjungan)++
 
 	fmt.Println("Transaksi berhasil ditambahkan")
+	fmt.Println("Pasien :", dataPasien[idxPasien].Nama)
+	fmt.Println("Layanan :", dataLayanan[idxLayanan].Nama)
+	fmt.Println("Biaya :", dataLayanan[idxLayanan].Harga)
 }
 
 // tampilTransaksi menampilkan seluruh data transaksi
@@ -555,14 +579,51 @@ func tampilKunjungan(nKunjungan int) {
 	fmt.Println("----------------------")
 }
 
-// statistik menampilkan statistik kunjungan dan layanan terbanyak
+// statistik menampilkan jumlah kunjungan harian dan layanan terbanyak
 // Parameter: nKunjungan int - jumlah kunjungan saat ini
 func statistik(nKunjungan int) {
 	var layananTerbanyak string
 	var maxCount, count int
 
+	fmt.Println("\n** STATISTIK **")
+
+	if nKunjungan == 0 {
+		fmt.Println("Belum ada data kunjungan")
+		return
+	}
+
+	// Statistik jumlah kunjungan harian
+	fmt.Println("Jumlah Kunjungan Harian:")
+
+	for i := 0; i < nKunjungan; i++ {
+		sudahDihitung := false
+
+		// cek apakah tanggal sudah pernah ditampilkan
+		for k := 0; k < i; k++ {
+			if dataKunjungan[i].Tanggal == dataKunjungan[k].Tanggal {
+				sudahDihitung = true
+			}
+		}
+
+		if !sudahDihitung {
+			count = 0
+
+			for j := 0; j < nKunjungan; j++ {
+				if dataKunjungan[i].Tanggal == dataKunjungan[j].Tanggal {
+					count++
+				}
+			}
+
+			fmt.Println("Tanggal", dataKunjungan[i].Tanggal, ":", count, "kunjungan")
+		}
+	}
+
+	// Statistik layanan paling diminati
+	maxCount = 0
+
 	for i := 0; i < nKunjungan; i++ {
 		count = 0
+
 		for j := 0; j < nKunjungan; j++ {
 			if dataKunjungan[i].Layanan == dataKunjungan[j].Layanan {
 				count++
@@ -575,12 +636,8 @@ func statistik(nKunjungan int) {
 		}
 	}
 
-	fmt.Println("\n*** STATISTIK ***")
-	fmt.Println("Jumlah Kunjungan :", nKunjungan)
-
-	if nKunjungan > 0 {
-		fmt.Println("Layanan Terbanyak :", layananTerbanyak)
-	}
+	fmt.Println("Layanan Paling Diminati :", layananTerbanyak)
+	fmt.Println("Jumlah Penggunaan       :", maxCount)
 }
 
 // menuAdmin menampilkan dan mengelola menu khusus admin
@@ -593,11 +650,12 @@ func menuAdmin(nPasien *int, nLayanan *int, nKunjungan *int) {
 	menuAdminPart1(nPasien, nLayanan)
 
 	for {
-		fmt.Println("\n*** MENU ADMIN (PART 2) ***")
+		fmt.Println("\n** MENU ADMIN (PART 2) **")
 		fmt.Println("1. Search Nama (Sequential Search)")
 		fmt.Println("2. Sort Pasien by ID (persiapan Binary Search)")
 		fmt.Println("3. Search ID (Binary Search)")
 		fmt.Println("4. Statistik")
+		fmt.Println("5. Kembali ke Part 1")
 		fmt.Println("0. Logout")
 		fmt.Print("Pilih : ")
 		fmt.Scan(&pilih)
@@ -607,17 +665,25 @@ func menuAdmin(nPasien *int, nLayanan *int, nKunjungan *int) {
 			fmt.Print("Masukkan Nama : ")
 			fmt.Scan(&nama)
 			sequentialSearchNama(nama, *nPasien)
+
 		case 2:
 			sortPasienByID(*nPasien)
 			fmt.Println("Data pasien berhasil diurutkan berdasarkan ID")
+
 		case 3:
 			fmt.Print("Masukkan ID : ")
 			fmt.Scan(&id)
 			binarySearchID(id, *nPasien)
+
 		case 4:
 			statistik(*nKunjungan)
+
+		case 5:
+			menuAdminPart1(nPasien, nLayanan)
+
 		case 0:
 			return
+
 		default:
 			fmt.Println("Pilihan tidak valid")
 		}
@@ -625,8 +691,8 @@ func menuAdmin(nPasien *int, nLayanan *int, nKunjungan *int) {
 }
 
 // menuKasir menampilkan dan mengelola menu khusus kasir
-// Parameter: nTransaksi *int, nKunjungan *int - pointer ke counter masing-masing
-func menuKasir(nTransaksi *int, nKunjungan *int) {
+// Parameter: nTransaksi *int, nKunjungan *int, nPasien *int, nLayanan *int - pointer ke counter masing-masing
+func menuKasir(nTransaksi *int, nKunjungan *int, nPasien *int, nLayanan *int) {
 	var pilih int
 	var urutPilih int
 
@@ -643,7 +709,7 @@ func menuKasir(nTransaksi *int, nKunjungan *int) {
 
 		switch pilih {
 		case 1:
-			tambahTransaksi(nTransaksi, nKunjungan)
+			tambahTransaksi(nTransaksi, nKunjungan, *nPasien, *nLayanan)
 		case 2:
 			tampilTransaksi(*nTransaksi)
 		case 3:
@@ -652,11 +718,12 @@ func menuKasir(nTransaksi *int, nKunjungan *int) {
 			fmt.Println("2. Descending")
 			fmt.Print("Pilih [1-2] : ")
 			fmt.Scan(&urutPilih)
-			if urutPilih == 1 {
+			switch urutPilih {
+			case 1:
 				selectionSortTanggal(*nTransaksi, true)
-			} else if urutPilih == 2 {
+			case 2:
 				selectionSortTanggal(*nTransaksi, false)
-			} else {
+			default:
 				fmt.Println("Pilihan tidak valid")
 			}
 		case 4:
@@ -665,11 +732,12 @@ func menuKasir(nTransaksi *int, nKunjungan *int) {
 			fmt.Println("2. Descending")
 			fmt.Print("Pilih [1-2] : ")
 			fmt.Scan(&urutPilih)
-			if urutPilih == 1 {
+			switch urutPilih {
+			case 1:
 				insertionSortBiaya(*nTransaksi, true)
-			} else if urutPilih == 2 {
+			case 2:
 				insertionSortBiaya(*nTransaksi, false)
-			} else {
+			default:
 				fmt.Println("Pilihan tidak valid")
 			}
 		case 5:
@@ -700,10 +768,13 @@ func main() {
 			registrasi(&nUser)
 		case 2:
 			role = login(nUser)
-			if role == "admin" {
+			switch role {
+			case "admin":
 				menuAdmin(&nPasien, &nLayanan, &nKunjungan)
-			} else if role == "kasir" {
-				menuKasir(&nTransaksi, &nKunjungan)
+			case "kasir":
+				menuKasir(&nTransaksi, &nKunjungan, &nPasien, &nLayanan)
+			default:
+				fmt.Println("Role tidak dikenal")
 			}
 		case 3:
 			fmt.Println("Terima kasih telah menggunakan SIM-KLIK")
